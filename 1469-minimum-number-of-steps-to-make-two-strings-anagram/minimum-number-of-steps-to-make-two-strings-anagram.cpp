@@ -1,21 +1,25 @@
-
 class Solution {
 public:
     int minSteps(string s, string t) {
-        sort(s.begin(),s.end());
-        sort(t.begin(),t.end());
-
-        int top=0,bottom=0;
-        int count=0;
-        while( top<s.size() && bottom<s.size()){
-            if(s[top]==t[bottom]){
-              count++;
-              top++;
-              bottom++;  
-            } 
-            else if(s[top]<t[bottom]) top++;
-            else if(s[top]>t[bottom]) bottom++;
+        map<char,int>mp;
+      //  map<char,int>mp1;
+        for(int i = 0;i<s.size();i++)
+        {
+            mp[s[i]]++;
         }
-        return s.size()-count;
+        for(int i = 0;i<t.size();i++)
+        {
+            if(mp[t[i]]){
+                mp[t[i]]--;
+            }
+           // else mp1[t[i]]++;
+            if(mp[t[i]]==0) mp.erase(t[i]);
+        }
+        int ans = 0;
+        for(auto it:mp)
+        {
+            ans+=it.second;
+        }
+        return ans;
     }
 };
