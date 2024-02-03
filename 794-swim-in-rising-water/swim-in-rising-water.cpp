@@ -1,6 +1,28 @@
+//Greedy & Union Find
+class UnionFind {    
+    vector<int> root, rank;
+public:
+    UnionFind(int n) : root(n), rank(n) {
+        rank.assign(n, 1);
+        iota(root.begin(), root.end(), 0);
+    }
+
+    int Find(int x) {
+        if (x == root[x]) return x;
+        else return root[x] = Find(root[x]);
+    }
+
+    void Union(int x, int y) {
+        int rX = Find(x), rY = Find(y);
+        if (rX == rY)  return;
+        if (rank[rX] > rank[rY]) swap(rX, rY);   
+        root[rX] = rY;
+        if (rank[rX]==rank[rY]) rank[rY]++;
+    }
+};
 class Solution {
 public:
-    using int2=array<int, 2>;
+    using int3=tuple<int, int, int>; // (wt, v, w)
     int n;
     int to1D(int i, int j){
         return i*n+j;
@@ -8,32 +30,28 @@ public:
     int swimInWater(vector<vector<int>>& grid) {
         n=grid.size();
         if (n==1) return 0;// edge case
-        vector<int> dist(n*n, INT_MAX);
-        dist[0]=0;
-        vector<bool> visited(n*n, 0);
-        int dir[][2]={{-1, 0},{1, 0},{0, -1},{0, 1}};
-        priority_queue<int2, vector<int2>, greater<int2>> pq;
-        pq.push({0, 0});// (dist, to1D(i, j))
-
-        while (!pq.empty()) {
-            auto [d, idx] = pq.top();
-            auto [i, j]=div(idx, n);
-            pq.pop();
-            if (d>dist[idx]) continue;
-            if (idx==n*n-1) return d;
-            visited[idx]=1;
-            int d2;
-            for (auto& dd: dir){
-                int r=i+dd[0], s=j+dd[1];
-                int&& idx2=to1D(r, s);
-                if(r<0||r>=n||s<0||s>=n||visited[idx2]) continue;
-                int w=max(grid[i][j], grid[r][s]);
-                d2=max(d, w);
-                if (d2 < dist[idx2]) {
-                    dist[idx2] = d2;
-                    pq.push({d2, idx2});
+        //Build edges (wt, v, w)
+        vector<int3> edges;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if (i<n-1){
+                    int wt=max(grid[i][j], grid[i+1][j]);
+                    edges.emplace_back(wt, to1D(i, j), to1D(i+1, j));
+                }
+                if (j<n-1){
+                    int wt=max(grid[i][j], grid[i][j+1]);
+                    edges.emplace_back(wt, to1D(i, j), to1D(i, j+1));
                 }
             }
+        }
+        sort(edges.begin(), edges.end());
+        int V=n*n;
+        UnionFind uf(V);
+        for(auto& [wt, v, w]: edges){
+            if (uf.Find(v)!=uf.Find(w))
+                uf.Union(v, w);
+            if (uf.Find(0)==uf.Find(V-1))
+                return wt;
         }
         return 0;
     }
