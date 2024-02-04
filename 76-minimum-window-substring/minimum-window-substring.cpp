@@ -1,46 +1,52 @@
 class Solution {
 public:
     string minWindow(string s, string t) {
-    string final;
-    if(t.size()>s.size()){
-        return final;
-    }
-    unordered_map<char, int>list;
-    for(auto it: t){
-        list[it]++;
-    }
-    int i=0, j=0, llen=list.size(), slen=s.size()+1;
-    while(j<s.size()){
-        if(list.find(s[j])!=list.end()){
-            list[s[j]]--;
-            if(list[s[j]]==0){
-                llen--;
+        int n = s.size();
+        int m = t.size();
+        string ans = "";
+        if(m>n) return ans;
+        map<char,int>mp;
+       // int ct = 0;
+        for(auto it:t)
+        {
+            mp[it]++;
+          //  ct++;
+        }
+        int i = 0;
+        int j = 0;
+        int ct = mp.size();
+       int size = INT_MAX;
+        while(j<n)
+        {
+            char v= s[j];
+            if(mp.find(v)!=mp.end())
+            {
+                mp[v]--;
+                if(mp[v]==0) ct--;
             }
-        }
-        if(llen>0){
-            j++;
-        }
-        else if(llen==0){
-            while(list.find(s[i])==list.end() || list[s[i]]<0){
-                if(list.find(s[i])!=list.end()){
-                    list[s[i]]++;
+            if(ct>0){
+                j++;
+                continue;
+            }
+            while(mp.find(s[i])==mp.end() || mp[s[i]]<0){
+                if(mp.find(s[i])!=mp.end())
+                {
+                    mp[s[i]]++;
                 }
                 i++;
             }
-            if(slen>j-i+1){
-                slen=j-i+1;
-                final=s.substr(i, j-i+1);
+            if(size>j-i+1){
+                size = j-i+1;
+                ans = s.substr(i,j-i+1);
             }
-            if(list.find(s[i])!=list.end()){
-                list[s[i]]++;
-                if(list[s[i]]==1){
-                    llen++;
-                }
+            if(mp.find(s[i])!=mp.end())
+            {
+                mp[s[i]]++;
+                if(mp[s[i]]==1) ct++;
             }
             i++;
             j++;
         }
+        return ans;
     }
-    return final;
-}
 };
