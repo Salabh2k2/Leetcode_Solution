@@ -1,41 +1,30 @@
-int dp[101][101];
-int n;
-
-int find(int x, int y, vector<vector<int>>& g)
-{
-    if(x == n)
-        return 0;
-
-    if(dp[x][y] != -100000)
-        return dp[x][y];
-
-    int ans = g[x][y] + find(x+1, y, g);
-
-    if(y-1>=0)
-        ans = min(ans, g[x][y] + find(x+1, y-1, g) );
-
-    if(y+1!=n)
-        ans = min(ans, g[x][y] + find(x+1, y+1, g) );
-    
-    return dp[x][y] = ans;
-}
-
 class Solution {
 public:
-    int minFallingPathSum(vector<vector<int>>& mat) {
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        vector<vector<int>> dp(n, vector<int>(n, INT_MAX));
         
-        n = mat.size();
-        int ans = 1e9;
-        
-        for(int i=0; i<101; ++i)
-            for(int j=0; j<101; ++j)
-                dp[i][j] = -100000;
+        // Define the recursive function with memoization
+        function<int(int, int)> rec = [&](int x, int y) {
+            if (x < 0 || x >= n || y < 0 || y >= n) return INT_MAX; // Out of bounds
+            if (x == 0) return matrix[x][y]; // Base case: top row
+            if (dp[x][y] != INT_MAX) return dp[x][y]; // Return memoized value if available
+            
+            // Calculate the minimum falling path sum recursively
+            int left = rec(x - 1, y - 1);
+            int middle = rec(x - 1, y);
+            int right = rec(x - 1, y + 1);
+            
+            // Update the current cell's value in the DP table
+            return dp[x][y] = matrix[x][y] + min({left, middle, right});
+        };
 
+        // Start the recursion from each cell in the first row
+        int minPathSum = INT_MAX;
+        for (int j = 0; j < n; ++j) {
+            minPathSum = min(minPathSum, rec(n - 1, j));
+        }
 
-
-        for(int i=0; i<mat.size(); ++i)
-            ans = min(ans, find(0, i, mat));
-        
-        return ans;
+        return minPathSum;
     }
 };
