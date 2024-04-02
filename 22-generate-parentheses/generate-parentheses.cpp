@@ -21,7 +21,7 @@ public:
 
     void generateParentheses(int n, int open, int close, std::vector<std::string>& result, std::string current) {
         if (open == 0 && close == 0) {
-            if (isValid(current)) {
+            if (true) {
                 result.push_back(current);
             }
             return;
