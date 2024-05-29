@@ -5,7 +5,7 @@ public:
         map<int, vector<int>> mp;
         int ans = 0;
 
-        // Populate the map with positions of '0's
+       
         for (int i = 0; i < n; i++) {
             if (s[i] == '0') {
                 mp[0].push_back(i);
@@ -14,7 +14,7 @@ public:
 
         int j = n - 1;
         while (j >= 0) {
-            // Remove elements from mp[0] that are not relevant anymore
+           
             while (!mp[0].empty() && mp[0].back() >= j) {
                 mp[0].pop_back();
             }
